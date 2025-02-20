@@ -1,0 +1,5 @@
+com/example/CalendarManagement/service/MeetingRoomServiceTest.class
+com/example/CalendarManagement/service/EmployeeServiceTest.class
+com/example/CalendarManagement/EmployeeControllerIT.class
+com/example/CalendarManagement/CalendarManagementApplicationTests.class
+com/example/CalendarManagement/MeetingRoomControllerIT.class
