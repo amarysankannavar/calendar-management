@@ -6,6 +6,7 @@ import com.example.CalendarManagement.DTO.ScheduleMeetingDTO;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
 import com.example.CalendarManagement.Exception.EmployeesNotAvailableException;
 import com.example.CalendarManagement.Exception.MeetingNotFoundException;
+import com.example.CalendarManagement.generated.MeetingException;
 import com.example.CalendarManagement.model.EmployeeModel;
 import com.example.CalendarManagement.model.MeetingModel;
 import com.example.CalendarManagement.model.MeetingRoomModel;
@@ -47,6 +48,8 @@ public class MeetingService {
 
     @Autowired
     private EmployeeRepo employeeRepo;
+
+    Logger logger =LoggerFactory.getLogger(MeetingService.class);
 
 
 
@@ -97,19 +100,6 @@ public class MeetingService {
     }
 
     public boolean canSchedule(MeetingRequestDTO meetingRequestDTO) {
-        // Validate date (must be today or later)
-        if(meetingRequestDTO.getEmployeeIds().size()<6){
-            throw new IllegalArgumentException("The number of employees should be more than 6.");
-        }
-
-        if (meetingRequestDTO.getDate().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Meeting date must be today or a future date.");
-        }
-
-
-        if (!meetingRequestDTO.getStartTime().isBefore(meetingRequestDTO.getEndTime())) {
-            throw new IllegalArgumentException("Start time must be before end time.");
-        }
 
 
       /*  List<Integer> availableEmployees = employeeRepo.findAvailableEmpoloyees(meetingRequestDTO.getEmployeeIds(), meetingRequestDTO.getDate(), meetingRequestDTO.getStartTime(), meetingRequestDTO.getEndTime());
@@ -140,16 +130,19 @@ public class MeetingService {
             List<Integer> employeeIds = meetingRequestDTO.getEmployeeIds();
 
 
-
+           logger.info("checking the schedule.");
             try {
                 boolean schedule = client.canScheduleMeeting(employeeIds, date, start, end);
+                logger.info("call the thrift server.");
                 return schedule;
+            } catch (MeetingException e) {
+                throw new MeetingException("Meeting policies are not met.",400);
             } catch (TException e) {
                 throw new RuntimeException(e);
             }
 
 
-        } catch (TTransportException e) {
+        } catch (TTransportException | MeetingException e) {
             throw new RuntimeException(e);
         } finally {
             if (transport != null && transport.isOpen()) {
@@ -164,25 +157,6 @@ public class MeetingService {
     }
 
     public int scheduleMeeting(ScheduleMeetingDTO scheduleMeetingDTO){
-       /* List<Integer> availableEmployees = employeeRepo.findAvailableEmpoloyees(scheduleMeetingDTO.getEmployeeIds(), scheduleMeetingDTO.getDate(), scheduleMeetingDTO.getStartTime(), scheduleMeetingDTO.getEndTime());
-        if(availableEmployees.size()!=scheduleMeetingDTO.getEmployeeIds().size()){
-
-            throw new EmployeesNotAvailableException("Employees are busy.");
-
-        } */
-        if(scheduleMeetingDTO.getEmployeeIds().size()<6){
-           throw new IllegalArgumentException("The number of employees should be more than 6.");
-        }
-        if (scheduleMeetingDTO.getDate().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Meeting date must be today or a future date.");
-        }
-
-
-        if (!scheduleMeetingDTO.getStartTime().isBefore(scheduleMeetingDTO.getEndTime())) {
-            throw new IllegalArgumentException("Start time must be before end time.");
-        }
-
-
 
         TTransport transport = null;
         int meetingId=0;

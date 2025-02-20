@@ -1,6 +1,7 @@
 package com.example.CalendarManagement.Exception;
 
 import com.example.CalendarManagement.DTO.ApiResponse;
+import com.example.CalendarManagement.generated.MeetingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -75,6 +76,23 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ApiResponse<>(ex.getMessage(), 409, "Error", errorDetails));
     }
+
+    @ExceptionHandler(MeetingException.class)
+    public ResponseEntity<ApiResponse<String>> handleMeetingException(MeetingException ex) {
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("errorCode", String.valueOf(ex.getErrorCode()));
+        errorDetails.put("message", ex.getMessage());
+
+        ApiResponse<String> response = new ApiResponse<>(
+                "Meeting scheduling failed",
+                400,
+                "Error",
+                errorDetails
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 
 
     private Map<String, String> getErrorDetails(String message) {
