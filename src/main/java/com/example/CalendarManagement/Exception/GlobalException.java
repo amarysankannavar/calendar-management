@@ -93,6 +93,21 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    @ExceptionHandler(MeetingNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleMeetingNotFoundException(MeetingNotFoundException ex){
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("details", ex.getMessage());
+        ApiResponse<String> response = new ApiResponse<>(
+                "Meeting Not Found.",
+                404,
+                "Error",
+                errorDetails
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+
+    }
+
 
 
     private Map<String, String> getErrorDetails(String message) {

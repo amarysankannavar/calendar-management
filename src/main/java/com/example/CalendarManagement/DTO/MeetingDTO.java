@@ -1,5 +1,7 @@
 package com.example.CalendarManagement.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -44,8 +46,7 @@ public class MeetingDTO {
         this.isActive = isActive;
     }
 
-    @NotNull(message = "Employee IDs cannot be null.")
-    private List<Integer> employeeIds;
+
     // Getters and Setters
     public int getMeetingId() {
         return meetingId;
@@ -110,4 +111,6 @@ public class MeetingDTO {
     public void setActive(boolean active) {
         this.isActive = active;
     }
+
+
 }

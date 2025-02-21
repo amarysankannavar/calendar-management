@@ -30,18 +30,7 @@ import java.util.Optional;
 @SpringBootApplication
 //public class CalendarManagementApplication implements CommandLineRunner
 public class CalendarManagementApplication {
-	@Autowired
-	private MeetingRepo meetingRepo;
 
-	@Autowired
-	private MeetingStatusRepo meetingStatusRepo;
-
-	@Autowired
-	private EmployeeRepo employeeRepo;
-
-	@Autowired
-	private MeetingRoomRepo meetingRoomRepo;
-	private static final Logger logger = LoggerFactory.getLogger(CalendarManagementApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(CalendarManagementApplication.class, args);

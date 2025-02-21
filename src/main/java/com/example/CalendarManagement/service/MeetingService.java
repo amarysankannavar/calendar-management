@@ -4,8 +4,8 @@ import com.example.CalendarManagement.DTO.MeetingDTO;
 import com.example.CalendarManagement.DTO.MeetingRequestDTO;
 import com.example.CalendarManagement.DTO.ScheduleMeetingDTO;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
-import com.example.CalendarManagement.Exception.EmployeesNotAvailableException;
 import com.example.CalendarManagement.Exception.MeetingNotFoundException;
+import com.example.CalendarManagement.Exception.RoomNotFoundException;
 import com.example.CalendarManagement.generated.MeetingException;
 import com.example.CalendarManagement.model.EmployeeModel;
 import com.example.CalendarManagement.model.MeetingModel;
@@ -27,9 +27,7 @@ import org.springframework.stereotype.Service;
 import com.example.CalendarManagement.generated.MeetingManage;
 
 import javax.transaction.Transactional;
-import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.LocalTime;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,7 +77,7 @@ public class MeetingService {
 
         // Fetch the MeetingRoomModel object by roomId
         MeetingRoomModel meetingRoom = meetingRoomRepo.findById(meetingDTO.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("Room ID not found"));
+                .orElseThrow(() -> new RoomNotFoundException("Room ID not found"));
 
         // Create and save new Meeting
         MeetingModel meeting = new MeetingModel(meetingDTO.getDescription(), meetingDTO.getAgenda(),
@@ -100,14 +98,6 @@ public class MeetingService {
     }
 
     public boolean canSchedule(MeetingRequestDTO meetingRequestDTO) {
-
-
-      /*  List<Integer> availableEmployees = employeeRepo.findAvailableEmpoloyees(meetingRequestDTO.getEmployeeIds(), meetingRequestDTO.getDate(), meetingRequestDTO.getStartTime(), meetingRequestDTO.getEndTime());
-        if(availableEmployees.size()!=meetingRequestDTO.getEmployeeIds().size()){
-
-           throw new EmployeesNotAvailableException("Employees are busy.");
-        } */
-
 
         List<Integer> empIds = meetingRequestDTO.getEmployeeIds();
         for (int empId : empIds) {

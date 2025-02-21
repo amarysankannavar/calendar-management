@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Transactional
 @ActiveProfiles("test")
 @TestPropertySource("classpath:application-test.properties")
 public class MeetingRoomControllerIT {
