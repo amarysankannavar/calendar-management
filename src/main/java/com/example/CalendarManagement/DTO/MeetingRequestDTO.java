@@ -15,6 +15,8 @@ public class MeetingRequestDTO {
     @NotNull(message = "date cannot be null.")
     private LocalDate date;
 
+    private int roomId;
+
     // Getters and Setters
     public List<Integer> getEmployeeIds() {
         return employeeIds;
@@ -47,4 +49,8 @@ public class MeetingRequestDTO {
     public void setDate(LocalDate date) {
         this.date = date;
     }
+
+    public void setRoomId(int roomId) { this.roomId=roomId;}
+
+    public int getRoomId(){ return roomId;}
 }

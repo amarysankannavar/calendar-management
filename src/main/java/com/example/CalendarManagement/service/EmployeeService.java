@@ -35,10 +35,7 @@ public class EmployeeService {
 
     // Fetch all employees and return as EmployeeDTO list
     public List<EmployeeDTO> getEmployees() {
-        /*return employeeRepo.findAll().stream()
-                .map(emp -> new EmployeeDTO(emp.getId(), emp.getName(), emp.getWorkEmail(),
-                        emp.getOffice().getId(), emp.isActive()))  // Changed to reflect office name
-                .collect(Collectors.toList()); */
+
         return employeeRepo.findActiveEmployees().stream()
                 .map(emp -> new EmployeeDTO(emp.getId(), emp.getName(), emp.getWorkEmail(),
                         emp.getOffice().getId(), emp.isActive()))  // Changed to reflect office name
@@ -58,19 +55,6 @@ public class EmployeeService {
 
     // Add new employee with validation
     public void addEmployee(EmployeeDTO empDTO) {
-       /* if (empDTO.getEmployeeId() != 0 && employeeRepo.existsById(empDTO.getEmployeeId())) {
-            throw new IllegalArgumentException("Employee ID already exists.");
-        }
-
-        // Validate name
-        if (empDTO.getName() == null || empDTO.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Employee name cannot be empty.");
-        }
-
-        // Validate email format
-        if (!empDTO.getWorkEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Invalid email format.");
-        }   */
 
         // Check duplicate email
         if (employeeRepo.findByWorkEmail(empDTO.getWorkEmail()).isPresent()) {
@@ -94,20 +78,7 @@ public class EmployeeService {
         employee.setActive(false);  // Deactivating the employee instead of deleting
         employeeRepo.save(employee);
     }
-/*
-    public boolean deleteEmployee(int employeeId) {
-        Optional<EmployeeModel> employee = employeeRepo.findById(employeeId);
-        if (employee.isPresent()) {
-            employeeRepo.delete(employee.get());
-            return true;  // Employee deleted successfully
-        }
-        else {
-            throw new EmployeeNotFoundException("Employee not found");
-        }
 
-
-    }
-*/
     public List<Object[]> meetingsOfEmployee(int employeeId, LocalDate fromDate, LocalDate toDate){
         logger.info("inputs:"+employeeId+" "+fromDate+" "+toDate);
         List<Object[]> meetings =  meetingStatusRepo.findMeetingDetailsByEmployeeIdAndDateRange(employeeId,fromDate,toDate);

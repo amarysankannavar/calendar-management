@@ -107,6 +107,8 @@ public class MeetingService {
             }
         }
 
+
+
         TTransport transport = null;
         try {
             transport = new TSocket("localhost", 9090);
@@ -118,15 +120,16 @@ public class MeetingService {
             String end = String.valueOf(meetingRequestDTO.getEndTime());
             String date = String.valueOf(meetingRequestDTO.getDate());
             List<Integer> employeeIds = meetingRequestDTO.getEmployeeIds();
+            int roomId = meetingRequestDTO.getRoomId();
 
 
            logger.info("checking the schedule.");
             try {
-                boolean schedule = client.canScheduleMeeting(employeeIds, date, start, end);
+                boolean schedule = client.canScheduleMeeting(employeeIds, date, start, end,roomId);
                 logger.info("call the thrift server.");
                 return schedule;
             } catch (MeetingException e) {
-                throw new MeetingException("Meeting policies are not met.",400);
+                throw e;
             } catch (TException e) {
                 throw new RuntimeException(e);
             }
