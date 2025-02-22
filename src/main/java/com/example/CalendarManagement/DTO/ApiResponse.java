@@ -6,8 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 */
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Map;
 
+@Getter
+@Setter
 public class ApiResponse<T> {
     private String message;
     private int code;
@@ -21,13 +26,4 @@ public class ApiResponse<T> {
         this.error = error;
     }
 
-    public String getMessage() { return message; }
-    public int getCode() { return code; }
-    public T getData() { return data; }
-    public Map<String, String> getError() { return error; }
-
-    public void setMessage(String message) { this.message = message; }
-    public void setCode(int code) { this.code = code; }
-    public void setData(T data) { this.data = data; }
-    public void setError(Map<String, String> error) { this.error = error; }
 }

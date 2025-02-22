@@ -1,5 +1,11 @@
 package com.example.CalendarManagement.DTO;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ResponseDTO<T> {
     private String message;
     private int code;
@@ -13,21 +19,6 @@ public class ResponseDTO<T> {
         this.error = error;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public DataContainer<T> getData() {
-        return data;
-    }
-
-    public Object getError() {
-        return error;
-    }
 
     private static class DataContainer<T> {
         private T body;

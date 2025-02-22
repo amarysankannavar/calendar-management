@@ -1,10 +1,20 @@
 package com.example.CalendarManagement.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class EmployeeModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,59 +32,13 @@ public class EmployeeModel {
     @JoinColumn(name = "officeId", nullable = false)
     private OfficeModel office;
 
-    public EmployeeModel() {
-    }
+
 
     public EmployeeModel(String name, String workEmail, OfficeModel office, boolean active) {
         this.name=name;
         this.workEmail=workEmail;
         this.office=office;
 
-    }
-
-
-
-
-    public int getId(){
-        return id;
-    }
-
-    public void setId(int id){
-        this.id=id;
-    }
-
-    public boolean isActive(){
-        return isActive;
-    }
-
-    public void setActive(boolean active){
-        this.isActive=active;
-    }
-
-
-
-    public String getName(){
-        return name;
-    }
-
-    public void setName(String name){
-        this.name=name;
-    }
-
-    public String getWorkEmail(){
-        return workEmail;
-    }
-
-    public void setWorkEmail(String workEmail){
-        this.workEmail=workEmail;
-    }
-
-    public OfficeModel getOffice(){
-        return office;
-    }
-
-    public void setOffice(OfficeModel office){
-        this.office=office;
     }
 
 

@@ -1,10 +1,16 @@
 package com.example.CalendarManagement.DTO;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+
+@Getter
+@Setter
 public class MeetingRequestDTO {
     @NotNull(message = "employeeIds cannot be null.")
     private List<Integer> employeeIds;
@@ -17,40 +23,4 @@ public class MeetingRequestDTO {
 
     private int roomId;
 
-    // Getters and Setters
-    public List<Integer> getEmployeeIds() {
-        return employeeIds;
-    }
-
-    public void setEmployeeIds(List<Integer> employeeIds) {
-        this.employeeIds = employeeIds;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public void setRoomId(int roomId) { this.roomId=roomId;}
-
-    public int getRoomId(){ return roomId;}
 }

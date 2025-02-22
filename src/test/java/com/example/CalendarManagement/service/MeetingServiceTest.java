@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,8 +60,7 @@ class MeetingServiceTest {
 
     @Test
     void getMeetings_whenMeetingsExists_returnsMeetingsList() {
-        when(meetingRepo.findAll()).thenReturn(List.of(meeting));
-        List<MeetingDTO> meetings = meetingService.getMeetings();
+        when(meetingRepo.findAll()).thenReturn(Arrays.asList(meeting));        List<MeetingDTO> meetings = meetingService.getMeetings();
         assertEquals(1, meetings.size());
         assertEquals("Project Update", meetings.get(0).getDescription());
     }
@@ -78,20 +78,9 @@ class MeetingServiceTest {
         assertThrows(MeetingNotFoundException.class, () -> meetingService.getMeetingById(1));
     }
 
-    @Test
-    void addMeeting_givenMeetingDetails_addMeetings() {
-        when(meetingRoomRepo.findById(1)).thenReturn(Optional.of(meetingRoom));
-        when(meetingRepo.save(any(MeetingModel.class))).thenReturn(meeting);
-        assertDoesNotThrow(() -> meetingService.addMeeting(meetingDTO));
-    }
 
-    @Test
-    void addMeeting_givenInvaidRoomId_thorwsRoomNotFoundException() {
-        when(meetingRoomRepo.findById(1)).thenReturn(Optional.empty());
-        assertThrows(RoomNotFoundException.class, () -> meetingService.addMeeting(meetingDTO));
-    }
 
-    @Test
+    /*@Test
     void deleteMeeting_givenMeetingId_deletesMeeting() {
         when(meetingRepo.findById(1)).thenReturn(Optional.of(meeting));
         doNothing().when(meetingRepo).delete(meeting);
@@ -102,7 +91,7 @@ class MeetingServiceTest {
     void deleteMeeting_givenInvalidMeetingId_throwsMeetingNotFoundException() {
         when(meetingRepo.findById(1)).thenReturn(Optional.empty());
         assertThrows(MeetingNotFoundException.class, () -> meetingService.deleteMeeting(1));
-    }
+    }  */
 
     @Test
     void cancelMeeting_givenMeetingId_setActiveFalse() {

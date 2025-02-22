@@ -1,8 +1,15 @@
 package com.example.CalendarManagement.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class MeetingStatusModel {
 
     @Id
@@ -19,8 +26,6 @@ public class MeetingStatusModel {
 
     private String status;
 
-    public MeetingStatusModel() {
-    }
 
     public MeetingStatusModel(EmployeeModel employee, MeetingModel meeting, String status) {
         this.employee = employee;
@@ -28,35 +33,6 @@ public class MeetingStatusModel {
         this.status = status;
     }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
-    public EmployeeModel getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(EmployeeModel employee) {
-        this.employee = employee;
-    }
-
-    public MeetingModel getMeeting() {
-        return meeting;
-    }
-
-    public void setMeeting(MeetingModel meeting) {
-        this.meeting = meeting;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

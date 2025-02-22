@@ -4,7 +4,6 @@ import com.example.CalendarManagement.DTO.ApiResponse;
 import com.example.CalendarManagement.DTO.MeetingDTO;
 import com.example.CalendarManagement.DTO.MeetingRequestDTO;
 import com.example.CalendarManagement.DTO.ScheduleMeetingDTO;
-import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
 import com.example.CalendarManagement.service.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,7 +44,7 @@ public class MeetingController {
     // Deactivate (delete) meeting
     @DeleteMapping("/{meetingId}")
     public ResponseEntity<ApiResponse<String>> deleteMeeting(@PathVariable int meetingId) {
-        boolean isDeleted = meetingService.deleteMeeting(meetingId);
+        boolean isDeleted = meetingService.cancelMeeting(meetingId);
         if (isDeleted) {
             return ResponseEntity.ok(new ApiResponse<>("Meeting deleted successfully", 200, "Success", null));
         }

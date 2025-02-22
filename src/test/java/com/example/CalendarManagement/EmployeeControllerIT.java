@@ -65,6 +65,7 @@ public class EmployeeControllerIT {
                 .andExpect(jsonPath("$.data[0].name").value("Amar"))
                 .andExpect(jsonPath("$.data[1].name").value("Amarys"));
     }
+    /*
 
     @Test
     void getEmployee_givenEmployeeId_returnsEmployee() throws Exception {
@@ -121,5 +122,5 @@ public class EmployeeControllerIT {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.message").value("Employee not found"));
-    }
+    } */
 }

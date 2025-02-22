@@ -1,5 +1,7 @@
-/Users/amarsankannavar/Downloads/CalendarManagement/src/test/java/com/example/CalendarManagement/MeetingRoomControllerIT.java
-/Users/amarsankannavar/Downloads/CalendarManagement/src/test/java/com/example/CalendarManagement/EmployeeControllerIT.java
-/Users/amarsankannavar/Downloads/CalendarManagement/src/test/java/com/example/CalendarManagement/service/EmployeeServiceTest.java
-/Users/amarsankannavar/Downloads/CalendarManagement/src/test/java/com/example/CalendarManagement/service/MeetingRoomServiceTest.java
-/Users/amarsankannavar/Downloads/CalendarManagement/src/test/java/com/example/CalendarManagement/CalendarManagementApplicationTests.java
+/Users/amarsankannavar/Downloads/calendar-management/src/test/java/com/example/CalendarManagement/MeetingControllerIT.java
+/Users/amarsankannavar/Downloads/calendar-management/src/test/java/com/example/CalendarManagement/service/EmployeeServiceTest.java
+/Users/amarsankannavar/Downloads/calendar-management/src/test/java/com/example/CalendarManagement/CalendarManagementApplicationTests.java
+/Users/amarsankannavar/Downloads/calendar-management/src/test/java/com/example/CalendarManagement/service/MeetingRoomServiceTest.java
+/Users/amarsankannavar/Downloads/calendar-management/src/test/java/com/example/CalendarManagement/EmployeeControllerIT.java
+/Users/amarsankannavar/Downloads/calendar-management/src/test/java/com/example/CalendarManagement/service/MeetingServiceTest.java
+/Users/amarsankannavar/Downloads/calendar-management/src/test/java/com/example/CalendarManagement/MeetingRoomControllerIT.java

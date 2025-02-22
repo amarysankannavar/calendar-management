@@ -36,9 +36,6 @@ public class MeetingRoomService {
     }
 
     public void addMeetingRoom(MeetingRoomDTO roomDTO) {
-
-
-
         // Fetch office based on officeId
         OfficeModel office = officeRepo.findById(roomDTO.getOfficeId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid office ID"));

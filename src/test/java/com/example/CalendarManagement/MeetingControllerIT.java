@@ -35,8 +35,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -74,7 +73,7 @@ public class MeetingControllerIT {
         new Thread(() -> {
             try {
                 MeetingManage.Iface handler = mock(MeetingManage.Iface.class);
-                when(handler.canScheduleMeeting(anyList(), anyString(), anyString(), anyString()))
+                when(handler.canScheduleMeeting(anyList(), anyString(), anyString(), anyString(),anyInt()))
                         .thenReturn(true);
 
                 MeetingManage.Processor<MeetingManage.Iface> processor = new MeetingManage.Processor<>(handler);
@@ -112,7 +111,7 @@ public class MeetingControllerIT {
         String endTime = "12:30";
 
         // Call the Thrift service
-        boolean canSchedule = client.canScheduleMeeting(employeeIds, date, startTime, endTime);
+        boolean canSchedule = client.canScheduleMeeting(employeeIds, date, startTime, endTime,4);
 
         // Assert expected response
         assertTrue(canSchedule);

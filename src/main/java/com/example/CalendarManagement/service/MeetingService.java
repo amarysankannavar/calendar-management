@@ -7,6 +7,7 @@ import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
 import com.example.CalendarManagement.Exception.MeetingNotFoundException;
 import com.example.CalendarManagement.Exception.RoomNotFoundException;
 import com.example.CalendarManagement.generated.MeetingException;
+import com.example.CalendarManagement.mapper.MeetingMapper;
 import com.example.CalendarManagement.model.EmployeeModel;
 import com.example.CalendarManagement.model.MeetingModel;
 import com.example.CalendarManagement.model.MeetingRoomModel;
@@ -57,30 +58,17 @@ public class MeetingService {
     // Fetch all meetings and return as MeetingDTO list
     public List<MeetingDTO> getMeetings() {
         return meetingRepo.findAll().stream()
-                .map(meeting -> new MeetingDTO(meeting.getId(), meeting.getDescription(), meeting.getAgenda(),
-                        meeting.getMeetingRoom().getRoomId(), meeting.getDate(), meeting.getStartTime(), meeting.getEndTime(), meeting.isActive()))
+                .map(MeetingMapper::convertEntityToDto)
                 .collect(Collectors.toList());
     }
 
     // Fetch meeting by ID
     public MeetingDTO getMeetingById(int meetingId) {
-        MeetingModel meeting = meetingRepo.findById(meetingId)
-                .orElseThrow(() -> new MeetingNotFoundException("Meeting not found"));
-
-        return new MeetingDTO(meeting.getId(), meeting.getDescription(), meeting.getAgenda(),
-                meeting.getMeetingRoom().getRoomId(), meeting.getDate(), meeting.getStartTime(), meeting.getEndTime(), meeting.isActive());
+        return meetingRepo.findById(meetingId).map(MeetingMapper::convertEntityToDto).orElseThrow(()
+                -> new MeetingNotFoundException("Meeting not found"));
     }
 
-    // Deactivate (delete) meeting
-    public boolean deleteMeeting(int meetingId) {
-        Optional<MeetingModel> meeting = meetingRepo.findById(meetingId);
-        if (meeting.isPresent()) {
-            meetingRepo.delete(meeting.get());
-            return true;  // Meeting deleted successfully
-        } else {
-            throw new MeetingNotFoundException("Meeting not found");
-        }
-    }
+
 
     public boolean canSchedule(MeetingRequestDTO meetingRequestDTO) {
 
@@ -129,7 +117,6 @@ public class MeetingService {
         }
     }
 
-    @Transactional  // Ensures the database transaction is committed properly
     public MeetingModel saveMeeting(MeetingModel meeting) {
         return meetingRepo.save(meeting);
     }
