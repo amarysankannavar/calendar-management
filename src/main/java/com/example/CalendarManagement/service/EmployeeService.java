@@ -1,6 +1,7 @@
 package com.example.CalendarManagement.service;
 
 import com.example.CalendarManagement.DTO.EmployeeDTO;
+import com.example.CalendarManagement.Exception.DataStorageException;
 import com.example.CalendarManagement.Exception.DuplicateEmailException;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
 import com.example.CalendarManagement.model.EmployeeModel;
@@ -9,9 +10,11 @@ import com.example.CalendarManagement.repository.EmployeeRepo;
 import com.example.CalendarManagement.repository.MeetingRepo;
 import com.example.CalendarManagement.repository.MeetingStatusRepo;
 import com.example.CalendarManagement.repository.OfficeRepo;  // Imported OfficeRepo
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -56,18 +59,25 @@ public class EmployeeService {
     // Add new employee with validation
     public void addEmployee(EmployeeDTO empDTO) {
 
-        // Check duplicate email
-        if (employeeRepo.findByWorkEmail(empDTO.getWorkEmail()).isPresent()) {
-            throw new DuplicateEmailException("Email already in use.");
-        }
+
 
         // Fetch OfficeModel based on officeId
         OfficeModel office = officeRepo.findById(empDTO.getOfficeId())
                 .orElseThrow(() -> new IllegalArgumentException("Office not found"));
 
-        // Create and save new Employee
-        EmployeeModel emp = new EmployeeModel(empDTO.getName(), empDTO.getWorkEmail(), office, empDTO.isActive());
-        employeeRepo.save(emp);
+        try {
+            // Create and save new Employee
+            EmployeeModel emp = new EmployeeModel(empDTO.getName(), empDTO.getWorkEmail(), office, empDTO.isActive());
+            employeeRepo.save(emp);
+        } catch (DataIntegrityViolationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DataStorageException("Failed to add employee.");
+        }
+
+
+
+
     }
 
     // Delete (deactivate) employee

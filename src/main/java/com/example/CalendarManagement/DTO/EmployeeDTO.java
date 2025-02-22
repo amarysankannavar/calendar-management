@@ -2,6 +2,7 @@ package com.example.CalendarManagement.DTO;
 
 import org.hibernate.validator.constraints.UniqueElements;
 
+import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
@@ -13,7 +14,6 @@ public class EmployeeDTO {
     @NotBlank(message = "Employee name cannot be empty.")
     private String name;
 
-    @UniqueElements
     @NotBlank(message = "Work email cannot be empty.")
     @Email(message = "Invalid email format.")
     private String workEmail;

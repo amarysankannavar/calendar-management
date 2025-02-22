@@ -2,6 +2,7 @@ package com.example.CalendarManagement.Exception;
 
 import com.example.CalendarManagement.DTO.ApiResponse;
 import com.example.CalendarManagement.generated.MeetingException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -107,6 +108,42 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 
     }
+
+    @ExceptionHandler(DataStorageException.class)
+    public ResponseEntity<ApiResponse<String>> handleDataStorageException(DataStorageException ex){
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("details", ex.getMessage());
+        ApiResponse<String> response = new ApiResponse<>(
+                "Meeting Not Found.",
+                500,
+                "Error",
+                errorDetails
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+
+    }
+
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        String errorMessage = e.getMostSpecificCause().getMessage(); // Extract deep cause message
+        Map<String, String> errorDetails = new HashMap<>();
+        if (errorMessage.contains("Duplicate entry") && errorMessage.contains("work_email")) {
+            errorDetails.put("details", "This email is already in use. Please try a different one.");
+        } else {
+            errorDetails.put("details", "Database constraint violation.");
+        }
+        ApiResponse<String> response = new ApiResponse<>(
+                "Data Integrity Violation",
+                400,
+                "Error",
+                errorDetails
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 
 
 

@@ -1,5 +1,6 @@
 package com.example.CalendarManagement.service;
 
+import com.example.CalendarManagement.Exception.DataStorageException;
 import com.example.CalendarManagement.model.OfficeModel;
 import com.example.CalendarManagement.repository.OfficeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,12 @@ public class OfficeService {
 
     // Method to create a new office
     public OfficeModel createOffice(String name, String location) {
-        OfficeModel newOffice = new OfficeModel(name, location);
-        return officeRepo.save(newOffice);
+        try{
+            OfficeModel newOffice = new OfficeModel(name, location);
+            return officeRepo.save(newOffice);
+        } catch (Exception e) {
+            throw new DataStorageException("Failed to add the Office Room.");
+        }
     }
 
     public List<OfficeModel> getAllOffices() {

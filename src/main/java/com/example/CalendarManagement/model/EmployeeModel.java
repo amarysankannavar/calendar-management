@@ -12,6 +12,8 @@ public class EmployeeModel {
 
     @NotBlank(message = "Employee name cannot be empty okay.")
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String workEmail;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT true")

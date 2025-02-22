@@ -71,21 +71,6 @@ public class MeetingService {
                 meeting.getMeetingRoom().getRoomId(), meeting.getDate(), meeting.getStartTime(), meeting.getEndTime(), meeting.isActive());
     }
 
-    // Add new meeting with validation
-    public void addMeeting(MeetingDTO meetingDTO) {
-
-
-        // Fetch the MeetingRoomModel object by roomId
-        MeetingRoomModel meetingRoom = meetingRoomRepo.findById(meetingDTO.getRoomId())
-                .orElseThrow(() -> new RoomNotFoundException("Room ID not found"));
-
-        // Create and save new Meeting
-        MeetingModel meeting = new MeetingModel(meetingDTO.getDescription(), meetingDTO.getAgenda(),
-                meetingRoom, meetingDTO.getDate(), meetingDTO.getStartTime(), meetingDTO.getEndTime(),
-                meetingDTO.isActive());
-        meetingRepo.save(meeting);
-    }
-
     // Deactivate (delete) meeting
     public boolean deleteMeeting(int meetingId) {
         Optional<MeetingModel> meeting = meetingRepo.findById(meetingId);

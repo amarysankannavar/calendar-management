@@ -40,13 +40,7 @@ public class MeetingController {
         return ResponseEntity.ok(new ApiResponse<>("Meeting fetched successfully", 200, meeting, null));
     }
 
-    // Add new meeting
-    @PostMapping
-    public ResponseEntity<ApiResponse<String>> addMeeting(@Valid @RequestBody MeetingDTO meetingDTO) {
-        meetingService.addMeeting(meetingDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>("Meeting added successfully", 201, "Success", null));
-    }
+
 
     // Deactivate (delete) meeting
     @DeleteMapping("/{meetingId}")
