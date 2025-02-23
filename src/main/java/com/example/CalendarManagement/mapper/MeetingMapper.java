@@ -38,7 +38,7 @@ public class MeetingMapper {
         meeting.setId(meetingDTO.getMeetingId());
         meeting.setDescription(meetingDTO.getDescription());
         meeting.setAgenda(meetingDTO.getAgenda());
-        meeting.setMeetingRoom(meetingRoom); // Must be fetched from DB before conversion
+        meeting.setMeetingRoom(meetingRoom);
         meeting.setDate(meetingDTO.getDate());
         meeting.setStartTime(meetingDTO.getStartTime());
         meeting.setEndTime(meetingDTO.getEndTime());

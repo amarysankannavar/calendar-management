@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ScheduleMeetingDTO {
-    @NotNull(message = "EMployee Ids cannot be null.")
+    @NotNull(message = "Employee Ids cannot be null.")
     private List<Integer> employeeIds;
     @NotNull(message = "Description can not be null.")
     private String description;

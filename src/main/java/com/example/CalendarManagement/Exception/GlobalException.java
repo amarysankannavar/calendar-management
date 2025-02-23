@@ -62,6 +62,14 @@ class GlobalExceptionHandler {
                 .body(new ApiResponse<>(ex.getMessage(), 404, "Error", errorDetails));
     }
 
+    @ExceptionHandler(OfficeNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleOfficeNotFoundException(OfficeNotFoundException ex) {
+        Map<String,String> errorDetails= new HashMap<>();
+        errorDetails.put("details",ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiResponse<>(ex.getMessage(), 404, "Error", errorDetails));
+    }
+
     @ExceptionHandler(RoomNotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleRoomNotFoundException(RoomNotFoundException ex) {
         Map<String,String> errorDetails= new HashMap<>();

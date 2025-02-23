@@ -6,7 +6,7 @@ import com.example.CalendarManagement.DTO.ScheduleMeetingDTO;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
 import com.example.CalendarManagement.Exception.MeetingNotFoundException;
 import com.example.CalendarManagement.Exception.RoomNotFoundException;
-import com.example.CalendarManagement.generated.MeetingException;
+import com.example.CalendarManagement.generated.*;
 import com.example.CalendarManagement.mapper.MeetingMapper;
 import com.example.CalendarManagement.model.EmployeeModel;
 import com.example.CalendarManagement.model.MeetingModel;
@@ -24,8 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.example.CalendarManagement.generated.MeetingManage;
 
 import javax.transaction.Transactional;
 
@@ -47,6 +45,9 @@ public class MeetingService {
 
     @Autowired
     private EmployeeRepo employeeRepo;
+
+    MeetingRequest meetingRequest = new MeetingRequest();
+
 
     Logger logger =LoggerFactory.getLogger(MeetingService.class);
 
@@ -70,7 +71,9 @@ public class MeetingService {
 
 
 
-    public boolean canSchedule(MeetingRequestDTO meetingRequestDTO) {
+    public int canSchedule(MeetingRequestDTO meetingRequestDTO) {
+
+
 
         List<Integer> empIds = meetingRequestDTO.getEmployeeIds();
         for (int empId : empIds) {
@@ -89,18 +92,20 @@ public class MeetingService {
             TProtocol protocol = new TBinaryProtocol(transport);
             MeetingManage.Client client = new MeetingManage.Client(protocol);
 
-            String start = String.valueOf(meetingRequestDTO.getStartTime());
-            String end = String.valueOf(meetingRequestDTO.getEndTime());
-            String date = String.valueOf(meetingRequestDTO.getDate());
-            List<Integer> employeeIds = meetingRequestDTO.getEmployeeIds();
+            meetingRequest.setEmployeeIds(meetingRequestDTO.getEmployeeIds());
+            meetingRequest.setDate(String.valueOf(meetingRequestDTO.getDate()));
+            meetingRequest.setStartTime(String.valueOf(meetingRequestDTO.getStartTime()));
+            meetingRequest.setEndTime(String.valueOf(meetingRequestDTO.getEndTime()));
+
             int roomId = meetingRequestDTO.getRoomId();
+
 
 
            logger.info("checking the schedule.");
             try {
-                boolean schedule = client.canScheduleMeeting(employeeIds, date, start, end,roomId);
+                int availableRoomId = client.canScheduleMeeting(meetingRequest,roomId);
                 logger.info("call the thrift server.");
-                return schedule;
+                return availableRoomId;
             } catch (MeetingException e) {
                 throw e;
             } catch (TException e) {
@@ -121,26 +126,28 @@ public class MeetingService {
         return meetingRepo.save(meeting);
     }
 
-    public int scheduleMeeting(ScheduleMeetingDTO scheduleMeetingDTO){
-
+    public MeetingResponse scheduleMeeting(ScheduleMeetingDTO scheduleMeetingDTO){
+        MeetingInformation meetingInformation = new MeetingInformation();
         TTransport transport = null;
-        int meetingId=0;
+        MeetingResponse meetingAndRoomIds = new MeetingResponse();
         try{
             transport = new TSocket("localhost",9090);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
             MeetingManage.Client client = new MeetingManage.Client(protocol);
 
-            String description = scheduleMeetingDTO.getDescription();
-            String agenda = scheduleMeetingDTO.getAgenda();
-            String start = String.valueOf(scheduleMeetingDTO.getStartTime());
-            String end = String.valueOf(scheduleMeetingDTO.getEndTime());
-            String date = String.valueOf(scheduleMeetingDTO.getDate());
-            List<Integer> employeeIds = scheduleMeetingDTO.getEmployeeIds();
+
+            meetingInformation.setDescription(scheduleMeetingDTO.getDescription());
+            meetingInformation.setAgenda(scheduleMeetingDTO.getAgenda());
+            meetingRequest.setEmployeeIds(scheduleMeetingDTO.getEmployeeIds());
+            meetingRequest.setDate(String.valueOf(scheduleMeetingDTO.getDate()));
+            meetingRequest.setStartTime(String.valueOf(scheduleMeetingDTO.getStartTime()));
+            meetingRequest.setEndTime(String.valueOf(scheduleMeetingDTO.getEndTime()));
+
             int roomId = scheduleMeetingDTO.getRoomId();
 
             try{
-                 meetingId = client.scheduleMeeting(description,agenda,employeeIds,date,start,end,roomId);
+                meetingAndRoomIds = client.scheduleMeeting(meetingInformation,meetingRequest,roomId);
             } catch (TException e) {
                 throw new RuntimeException(e);
             }
@@ -154,7 +161,7 @@ public class MeetingService {
 
 
 
-        return meetingId;
+        return meetingAndRoomIds;
     }
 
     public boolean cancelMeeting(int meetingId) {

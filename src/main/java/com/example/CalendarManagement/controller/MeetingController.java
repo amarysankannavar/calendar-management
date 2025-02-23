@@ -4,6 +4,7 @@ import com.example.CalendarManagement.DTO.ApiResponse;
 import com.example.CalendarManagement.DTO.MeetingDTO;
 import com.example.CalendarManagement.DTO.MeetingRequestDTO;
 import com.example.CalendarManagement.DTO.ScheduleMeetingDTO;
+import com.example.CalendarManagement.generated.MeetingResponse;
 import com.example.CalendarManagement.service.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,21 +54,22 @@ public class MeetingController {
 
     @PostMapping("/canSchedule")
     public ResponseEntity<ApiResponse<String>> canScheduleMeeting(@Valid @RequestBody MeetingRequestDTO meetingRequestDTO){
-        boolean schedule = meetingService.canSchedule(meetingRequestDTO);
-        String canScheduleOrNot = schedule ? "Can be scheduled" : "can not schedule.";
+        int schedule = meetingService.canSchedule(meetingRequestDTO);
+        String canScheduleOrNot = schedule!=-1 ? "Can be scheduled. and the available Room id is:"+schedule : "can not schedule.";
         return ResponseEntity.ok(new ApiResponse<>("The meeting availabilty fetched",200,canScheduleOrNot,null));
     }
 
     @PostMapping("/scheduleMeeting")
     public ResponseEntity<ApiResponse<String>> scheduleMeeting(@Valid @RequestBody ScheduleMeetingDTO scheduleMeetingDTO){
 
-            int meetId = meetingService.scheduleMeeting(scheduleMeetingDTO);
-            if(meetId==0){
+            MeetingResponse meetAndRoomId = meetingService.scheduleMeeting(scheduleMeetingDTO);
+            if(meetAndRoomId.getScheduledMeetingId()==-1){
                 Map<String, String> errors = new HashMap();
                 errors.put("details:","conflicts error");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>("meeting schedule details",409,"meet is not scheduled",errors));
             }
-            return ResponseEntity.ok(new ApiResponse<>("meeting schedule details",200,"meet is scheduled and the meet is is :"+meetId,null));
+            return ResponseEntity.ok(new ApiResponse<>("meeting schedule details",200,"meet is scheduled. the meet id is :"+meetAndRoomId.getScheduledMeetingId()+
+                    "and the scheduled room id is: "+meetAndRoomId.getAvailableRoomId(),null));
 
     }
 

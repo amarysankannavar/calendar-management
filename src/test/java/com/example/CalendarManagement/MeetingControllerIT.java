@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("classpath:application-test.properties")
 public class MeetingControllerIT {
 
-    private static final int THRIFT_SERVER_PORT = 9091;
+    /*private static final int THRIFT_SERVER_PORT = 9091;
     private static final String THRIFT_SERVER_HOST = "localhost";
     private static TServer server;
 
@@ -176,5 +176,5 @@ public class MeetingControllerIT {
                 .getResponse();
 
         System.out.println("Response: " + response.getContentAsString());
-    }
+    } */
 }

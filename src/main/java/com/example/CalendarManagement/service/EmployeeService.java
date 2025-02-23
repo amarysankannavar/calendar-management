@@ -4,6 +4,7 @@ import com.example.CalendarManagement.DTO.EmployeeDTO;
 import com.example.CalendarManagement.Exception.DataStorageException;
 import com.example.CalendarManagement.Exception.DuplicateEmailException;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
+import com.example.CalendarManagement.Exception.OfficeNotFoundException;
 import com.example.CalendarManagement.model.EmployeeModel;
 import com.example.CalendarManagement.model.OfficeModel;  // Imported OfficeModel
 import com.example.CalendarManagement.repository.EmployeeRepo;
@@ -48,7 +49,7 @@ public class EmployeeService {
     // Fetch employee by ID
     public EmployeeDTO getEmployeeById(int employeeId) {
         EmployeeModel employee = employeeRepo.findById(employeeId)
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
         return new EmployeeDTO(employee.getId(), employee.getName(), employee.getWorkEmail(),
                 employee.getOffice().getId(), employee.isActive());
@@ -63,10 +64,11 @@ public class EmployeeService {
 
         // Fetch OfficeModel based on officeId
         OfficeModel office = officeRepo.findById(empDTO.getOfficeId())
-                .orElseThrow(() -> new IllegalArgumentException("Office not found"));
+                .orElseThrow(() -> new OfficeNotFoundException("Office not found"));
 
         try {
             // Create and save new Employee
+            logger.info("employee name is:"+empDTO.getName());
             EmployeeModel emp = new EmployeeModel(empDTO.getName(), empDTO.getWorkEmail(), office, empDTO.isActive());
             employeeRepo.save(emp);
         } catch (DataIntegrityViolationException e) {
@@ -85,8 +87,12 @@ public class EmployeeService {
         EmployeeModel employee = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> new EmployeeNotFoundException("Employee not found"));
 
-        employee.setActive(false);  // Deactivating the employee instead of deleting
-        employeeRepo.save(employee);
+      try {
+          employee.setActive(false);
+          employeeRepo.save(employee);
+      } catch (Exception e) {
+          throw new DataStorageException("Failed to add delete employee.");
+      }
     }
 
     public List<Object[]> meetingsOfEmployee(int employeeId, LocalDate fromDate, LocalDate toDate){

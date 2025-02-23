@@ -34,14 +34,31 @@ exception MeetingException {
   2: i32 errorCode
 }
 
+struct MeetingRequest {
+    1: list<i32> employeeIds,
+    2: string date,
+    3: string startTime,
+    4: string endTime
+}
+
+struct MeetingInformation {
+    1: string description,
+    2: string agenda
+}
+
+struct MeetingResponse {
+    1: i32 scheduledMeetingId,
+    2: i32 availableRoomId
+}
+
 // Meeting Service Definition
 service MeetingManage {
 
     // Check if meeting can be scheduled
-    bool canScheduleMeeting(1: list<i32> employeeIds, 2: string date, 3: string startTime, 4: string endTime,5: i32 roomId) throws (1: MeetingException ex)
+    i32 canScheduleMeeting(1: MeetingRequest meetingRequest,2: i32 roomId) throws (1: MeetingException ex)
 
     // Schedule a meeting (returns Meeting ID)
-   i32 scheduleMeeting(1: string description, 2: string agenda, 3: list<i32> employeeIds,4: string date, 5: string startTime, 6: string endTime, 7: i32 roomId)  throws (1: MeetingException ex)
+   MeetingResponse scheduleMeeting(1: MeetingInformation meetingInformation, 2: MeetingRequest meetingRequest, 3: i32 roomId)  throws (1: MeetingException ex)
 
     // Cancel an existing meeting
     void cancelMeeting(1: i32 meetingId)
