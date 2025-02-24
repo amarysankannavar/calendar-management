@@ -33,4 +33,11 @@ public class OfficeController {
         OfficeModel createdOffice = officeService.createOffice(officeModel.getName(), officeModel.getOfficeLoc());
         return ResponseEntity.ok(createdOffice);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteOffice(@PathVariable int id) {
+        boolean deleteOffice = officeService.deleteOffice(id);
+
+        return ResponseEntity.ok("Office deleted successfully");
+    }
 }

@@ -29,4 +29,6 @@ public interface MeetingStatusRepo extends JpaRepository<MeetingStatusModel, Int
     List<Object[]> findMeetingDetailsByEmployeeIdAndDateRange(Integer employeeId,
                                                               @Param("fromDate") LocalDate fromDate,
                                                               @Param("toDate") LocalDate toDate);
+
+    void deleteByMeeting(MeetingModel meeting);
 }

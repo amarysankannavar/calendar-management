@@ -28,7 +28,7 @@ public class ScheduleMeetingDTO {
     private LocalTime endTime;
     @NotNull(message = "date cannot be null.")
     private LocalDate date;
-    private int roomId;
+    private Integer roomId;
 
 
 }

@@ -25,7 +25,7 @@ public class MeetingRequestDTO {
     @NotNull(message = "date cannot be null.")
     private LocalDate date;
 
-    private int roomId;
+    private Integer roomId;
 
 
 }

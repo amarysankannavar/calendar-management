@@ -102,7 +102,9 @@ public class MeetingService {
             meetingRequest.setStartTime(String.valueOf(meetingRequestDTO.getStartTime()));
             meetingRequest.setEndTime(String.valueOf(meetingRequestDTO.getEndTime()));
 
-            int roomId = meetingRequestDTO.getRoomId();
+            int roomId = (meetingRequestDTO.getRoomId() == null) ? -1 : meetingRequestDTO.getRoomId();
+
+            logger.error("the roomId is:"+roomId);
 
 
 
@@ -125,6 +127,7 @@ public class MeetingService {
                 transport.close();  // CLOSE TRANSPORT HERE
             }
         }
+
     }
 
     public MeetingModel saveMeeting(MeetingModel meeting) {
@@ -149,10 +152,12 @@ public class MeetingService {
             meetingRequest.setStartTime(String.valueOf(scheduleMeetingDTO.getStartTime()));
             meetingRequest.setEndTime(String.valueOf(scheduleMeetingDTO.getEndTime()));
 
-            int roomId = scheduleMeetingDTO.getRoomId();
+            int roomId = (scheduleMeetingDTO.getRoomId() == null) ? -1 : scheduleMeetingDTO.getRoomId();
+            logger.info("room id in schedule meeting:"+roomId);
 
             try{
                 meetingAndRoomIds = client.scheduleMeeting(meetingInformation,meetingRequest,roomId);
+                logger.info("after calling the server side schedule meeting");
             } catch (TException e) {
                 throw new RuntimeException(e);
             }
