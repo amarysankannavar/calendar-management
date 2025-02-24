@@ -68,8 +68,9 @@ public class MeetingRoomService {
     public void deleteMeetingRoom(int roomId) {
         MeetingRoomModel room = meetingRoomRepo.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Meeting Room not found"));
+        room.setAvailable(false);
+        meetingRoomRepo.save(room);
 
-        meetingRoomRepo.delete(room);
     }
 
     public void updateMeetingRoomAvailability(int roomId, boolean availability) {

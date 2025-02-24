@@ -11,5 +11,6 @@ import java.time.LocalDate;
 public class EmployeeMeetingsDTO {
     private LocalDate fromDate;
     private LocalDate toDate;
+    boolean currentWeek;
 
 }

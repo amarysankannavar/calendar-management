@@ -1,6 +1,8 @@
 package com.example.CalendarManagement.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class MeetingRequestDTO {
     @NotNull(message = "employeeIds cannot be null.")
     private List<Integer> employeeIds;
@@ -22,5 +26,6 @@ public class MeetingRequestDTO {
     private LocalDate date;
 
     private int roomId;
+
 
 }

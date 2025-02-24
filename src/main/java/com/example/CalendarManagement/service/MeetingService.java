@@ -82,9 +82,10 @@ public class MeetingService {
         List<Integer> empIds = meetingRequestDTO.getEmployeeIds();
         for (int empId : empIds) {
             Optional<EmployeeModel> employee = employeeRepo.findById(empId);
-            if(!employee.isPresent()){
+            if(!employee.isPresent() || !employee.get().isActive()){
                 throw new EmployeeNotFoundException("Invalid employee ids");
             }
+
         }
 
 
