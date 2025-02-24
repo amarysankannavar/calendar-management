@@ -14,6 +14,7 @@ import com.example.CalendarManagement.repository.OfficeRepo;  // Imported Office
 import net.bytebuddy.implementation.bytecode.Throw;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,11 +41,16 @@ public class EmployeeService {
 
     // Fetch all employees and return as EmployeeDTO list
     public List<EmployeeDTO> getEmployees() {
+        MDC.put("requestId", UUID.randomUUID().toString());
+        logger.info("Fetching all employees, requestId: {}", MDC.get("requestId"));
 
-        return employeeRepo.findActiveEmployees().stream()
+        List<EmployeeDTO> employees= employeeRepo.findActiveEmployees().stream()
                 .map(emp -> new EmployeeDTO(emp.getId(), emp.getName(), emp.getWorkEmail(),
                         emp.getOffice().getId(), emp.isActive()))  // Changed to reflect office name
                 .collect(Collectors.toList());
+        logger.info("Fetched {} employees, requestId: {}", employees.size(), MDC.get("requestId"));
+        MDC.clear();
+        return employees;
     }
 
     // Fetch employee by ID
@@ -60,7 +67,7 @@ public class EmployeeService {
     // Add new employee with validation
     public void addEmployee(EmployeeDTO empDTO) {
 
-
+        MDC.put("requestId", UUID.randomUUID().toString());
 
         // Fetch OfficeModel based on officeId
         OfficeModel office = officeRepo.findById(empDTO.getOfficeId())
@@ -68,13 +75,15 @@ public class EmployeeService {
 
         try {
             // Create and save new Employee
-            logger.info("employee name is:"+empDTO.getName());
+            logger.info("Employee added successfully - Name: {}, requestId: {}", empDTO.getName(), MDC.get("requestId"));
             EmployeeModel emp = new EmployeeModel(empDTO.getName(), empDTO.getWorkEmail(), office, empDTO.isActive());
             employeeRepo.save(emp);
         } catch (DataIntegrityViolationException e) {
             throw e;
         } catch (Exception e) {
             throw new DataStorageException("Failed to add employee.");
+        }finally {
+            MDC.clear(); // Clear MDC after request is processed
         }
 
 
@@ -96,10 +105,12 @@ public class EmployeeService {
     }
 
     public List<Object[]> meetingsOfEmployee(int employeeId, LocalDate fromDate, LocalDate toDate){
-        logger.info("inputs:"+employeeId+" "+fromDate+" "+toDate);
-        List<Object[]> meetings =  meetingStatusRepo.findMeetingDetailsByEmployeeIdAndDateRange(employeeId,fromDate,toDate);
-        logger.info("The meeting details of the given employees are:"+meetings);
+        MDC.put("requestId", UUID.randomUUID().toString());
+        logger.info("Fetching meetings for Employee ID: {} from {} to {}, requestId: {}", employeeId, fromDate, toDate, MDC.get("requestId"));
 
+        List<Object[]> meetings =  meetingStatusRepo.findMeetingDetailsByEmployeeIdAndDateRange(employeeId,fromDate,toDate);
+        logger.info("Meetings fetched: {}, requestId: {}", meetings.size(), MDC.get("requestId"));
+        MDC.clear();
         return meetings;
     }
 

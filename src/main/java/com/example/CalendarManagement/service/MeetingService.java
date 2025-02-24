@@ -22,6 +22,7 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ import javax.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,6 +75,8 @@ public class MeetingService {
 
     public int canSchedule(MeetingRequestDTO meetingRequestDTO) {
 
+        MDC.put("requestId", UUID.randomUUID().toString());
+        logger.info("Checking if meeting can be scheduled, requestId: {}", MDC.get("requestId"));
 
 
         List<Integer> empIds = meetingRequestDTO.getEmployeeIds();
@@ -101,10 +105,10 @@ public class MeetingService {
 
 
 
-           logger.info("checking the schedule.");
+            logger.info("Calling Thrift service to check schedule, requestId: {}", MDC.get("requestId"));
             try {
                 int availableRoomId = client.canScheduleMeeting(meetingRequest,roomId);
-                logger.info("call the thrift server.");
+                logger.info("Thrift service responded with available room ID: {}, requestId: {}", availableRoomId, MDC.get("requestId"));
                 return availableRoomId;
             } catch (MeetingException e) {
                 throw e;
