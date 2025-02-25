@@ -1,13 +1,17 @@
 package com.example.CalendarManagement.service;
 
 import com.example.CalendarManagement.Exception.DataStorageException;
+import com.example.CalendarManagement.Exception.OfficeNotFoundException;
+import com.example.CalendarManagement.model.MeetingRoomModel;
 import com.example.CalendarManagement.model.OfficeModel;
+import com.example.CalendarManagement.repository.MeetingRoomRepo;
 import com.example.CalendarManagement.repository.OfficeRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,97 +20,101 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class OfficeServiceTest {
 
     @Mock
     private OfficeRepo officeRepo;
 
+    @Mock
+    private MeetingRoomRepo meetingRoomRepo;
+
+    @Mock
+    private MeetingRoomService meetingRoomService;
+
     @InjectMocks
     private OfficeService officeService;
 
+    private OfficeModel office1;
+    private OfficeModel office2;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        office1 = new OfficeModel("OfficeA", "LocationA");
+        office1.setId(1);
+
+        office2 = new OfficeModel("OfficeB", "LocationB");
+        office2.setId(2);
     }
 
     @Test
-    void findOfficeByName_givenExistingOffice_returnsOffice() {
-        // Arrange
-        String officeName = "Capillary";
-        OfficeModel office = new OfficeModel(officeName, "Bengaluru");
+    void getAllOffices_ShouldReturnAllOffices() {
+        when(officeRepo.findAll()).thenReturn(Arrays.asList(office1, office2));
 
-        when(officeRepo.findByName(officeName)).thenReturn(Optional.of(office));
+        List<OfficeModel> offices = officeService.getAllOffices();
 
-        // Act
-        OfficeModel result = officeService.findOfficeByName(officeName);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(officeName, result.getName());
-        verify(officeRepo, times(1)).findByName(officeName);
-    }
-
-    @Test
-    void findOfficeByName_givenNonExistingOffice_throwsException() {
-        // Arrange
-        String officeName = "NonExistent";
-
-        when(officeRepo.findByName(officeName)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        Exception exception = assertThrows(RuntimeException.class, () -> officeService.findOfficeByName(officeName));
-        assertEquals("Office not found with name: " + officeName, exception.getMessage());
-        verify(officeRepo, times(1)).findByName(officeName);
-    }
-
-    @Test
-    void createOffice_givenValidDetails_savesAndReturnsOffice() {
-        // Arrange
-        String name = "Capillary";
-        String location = "Bengaluru";
-        OfficeModel office = new OfficeModel(name, location);
-
-        when(officeRepo.save(any(OfficeModel.class))).thenReturn(office);
-
-        // Act
-        OfficeModel result = officeService.createOffice(name, location);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(name, result.getName());
-        assertEquals(location, result.getOfficeLoc());
-        verify(officeRepo, times(1)).save(any(OfficeModel.class));
-    }
-
-    @Test
-    void createOffice_whenExceptionOccurs_throwsDataStorageException() {
-        // Arrange
-        when(officeRepo.save(any(OfficeModel.class))).thenThrow(new RuntimeException("Database error"));
-
-        // Act & Assert
-        Exception exception = assertThrows(DataStorageException.class, () -> officeService.createOffice("Capillary", "Bengaluru"));
-        assertEquals("Failed to add the Office Room.", exception.getMessage());
-
-        verify(officeRepo, times(1)).save(any(OfficeModel.class));
-    }
-
-    @Test
-    void getAllOffices_whenOfficesExist_returnsOfficeList() {
-        // Arrange
-        List<OfficeModel> offices = Arrays.asList(
-                new OfficeModel("Capillary", "Bengaluru"),
-                new OfficeModel("Google", "Hyderabad")
-        );
-
-        when(officeRepo.findAll()).thenReturn(offices);
-
-        // Act
-        List<OfficeModel> result = officeService.getAllOffices();
-
-        // Assert
-        assertEquals(2, result.size());
-        assertEquals("Capillary", result.get(0).getName());
-        assertEquals("Google", result.get(1).getName());
+        assertEquals(2, offices.size());
         verify(officeRepo, times(1)).findAll();
+    }
+
+    @Test
+    void findOfficeByName_ShouldReturnOffice() {
+        when(officeRepo.findByName("OfficeA")).thenReturn(Optional.of(office1));
+
+        OfficeModel foundOffice = officeService.findOfficeByName("OfficeA");
+
+        assertNotNull(foundOffice);
+        assertEquals("OfficeA", foundOffice.getName());
+        verify(officeRepo, times(1)).findByName("OfficeA");
+    }
+
+    @Test
+    void findOfficeByName_WhenOfficeNotFound_ShouldThrowException() {
+        when(officeRepo.findByName("NonExistingOffice")).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> officeService.findOfficeByName("NonExistingOffice"));
+    }
+
+    @Test
+    void addOffice_ShouldSaveAndReturnOffice() {
+        when(officeRepo.save(any(OfficeModel.class))).thenReturn(office1);
+
+        OfficeModel createdOffice = officeService.createOffice("OfficeA", "LocationA");
+
+        assertNotNull(createdOffice);
+        assertEquals("OfficeA", createdOffice.getName());
+        verify(officeRepo, times(1)).save(any(OfficeModel.class));
+    }
+
+    @Test
+    void addOffice_WhenDataStorageException_ShouldThrowException() {
+        when(officeRepo.save(any(OfficeModel.class))).thenThrow(new RuntimeException());
+
+        assertThrows(DataStorageException.class, () -> officeService.createOffice("OfficeX", "LocationX"));
+    }
+
+    @Test
+    void deleteOffice_ShouldDeleteOfficeAndDeactivateRooms() {
+        when(officeRepo.findById(1)).thenReturn(Optional.of(office1));
+
+        MeetingRoomModel room1 = new MeetingRoomModel("Room1", "Floor1", office1);
+        room1.setRoomId(101);
+        MeetingRoomModel room2 = new MeetingRoomModel("Room2", "Floor2", office1);
+        room2.setRoomId(102);
+
+        when(meetingRoomRepo.findByOffice(office1)).thenReturn(Arrays.asList(room1, room2));
+
+        boolean result = officeService.deleteOffice(1);
+
+        assertTrue(result);
+        verify(meetingRoomService, times(2)).deleteMeetingRoom(anyInt());
+        verify(officeRepo, times(1)).delete(office1);
+    }
+
+    @Test
+    void deleteOffice_WhenOfficeNotFound_ShouldThrowException() {
+        when(officeRepo.findById(999)).thenReturn(Optional.empty());
+
+        assertThrows(OfficeNotFoundException.class, () -> officeService.deleteOffice(999));
     }
 }

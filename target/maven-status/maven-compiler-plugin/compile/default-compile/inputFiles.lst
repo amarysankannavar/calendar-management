@@ -2,7 +2,6 @@
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/model/MeetingRoomModel.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/repository/MeetingStatusRepo.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/MeetingRequestDTO.java
-/Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/MeetingsOfEmployee.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/EmployeeDTO.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/repository/MeetingRepo.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/generated/MeetingException.java
@@ -12,9 +11,12 @@
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/ApiResponse.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/generated/Meeting.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/MeetingDTO.java
+/Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/generated/MeetingInformation.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/model/OfficeModel.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/service/OfficeService.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/generated/MeetingStatus.java
+/Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/generated/MeetingResponse.java
+/Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/Exception/OfficeNotFoundException.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/model/EmployeeModel.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/service/EmployeeService.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/Exception/EmptyNameException.java
@@ -31,10 +33,12 @@
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/Exception/EmployeesNotAvailableException.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/Exception/RoomNotFoundException.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/repository/MeetingRoomRepo.java
+/Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/MeetingsDTO.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/ScheduleMeetingDTO.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/generated/MeetingManage.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/service/MeetingRoomService.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/MeetingRoomDTO.java
+/Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/generated/MeetingRequest.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/model/MeetingStatusModel.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/controller/MeetingRoomController.java
 /Users/amarsankannavar/Downloads/calendar-management/src/main/java/com/example/CalendarManagement/DTO/ResponseDTO.java

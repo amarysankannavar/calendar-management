@@ -22,7 +22,7 @@ public class OfficeController {
     }
 
     // Get office by name
-    @GetMapping("{name}")
+    @GetMapping("/{name}")
     public ResponseEntity<OfficeModel> getOfficeByName(@PathVariable String name) {
         return ResponseEntity.ok(officeService.findOfficeByName(name));
     }

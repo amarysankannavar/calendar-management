@@ -1,7 +1,9 @@
+com/example/CalendarManagement/MeetingControllerIntegrationTest.class
+com/example/CalendarManagement/MeetingRoomControllerIntegrationTest.class
+com/example/CalendarManagement/service/OfficeServiceTest.class
 com/example/CalendarManagement/service/MeetingRoomServiceTest.class
+com/example/CalendarManagement/EmployeeControllerIntegrationTest.class
 com/example/CalendarManagement/service/EmployeeServiceTest.class
-com/example/CalendarManagement/EmployeeControllerIT.class
 com/example/CalendarManagement/CalendarManagementApplicationTests.class
-com/example/CalendarManagement/MeetingControllerIT.class
-com/example/CalendarManagement/MeetingRoomControllerIT.class
+com/example/CalendarManagement/controller/OfficeControllerIntegrationTest.class
 com/example/CalendarManagement/service/MeetingServiceTest.class

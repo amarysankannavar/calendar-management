@@ -1,6 +1,8 @@
 package com.example.CalendarManagement.service;
 
 import com.example.CalendarManagement.DTO.EmployeeDTO;
+import com.example.CalendarManagement.DTO.MeetingDTO;
+import com.example.CalendarManagement.DTO.MeetingsDTO;
 import com.example.CalendarManagement.Exception.DataStorageException;
 import com.example.CalendarManagement.Exception.DuplicateEmailException;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
@@ -104,11 +106,19 @@ public class EmployeeService {
       }
     }
 
-    public List<Object[]> meetingsOfEmployee(int employeeId, LocalDate fromDate, LocalDate toDate){
+    public List<MeetingsDTO> meetingsOfEmployee(int employeeId, LocalDate fromDate, LocalDate toDate) {
         MDC.put("requestId", UUID.randomUUID().toString());
-        logger.info("Fetching meetings for Employee ID: {} from {} to {}, requestId: {}", employeeId, fromDate, toDate, MDC.get("requestId"));
+        logger.info("Fetching meetings for Employee ID: {} from {} to {}, requestId: {}",
+                employeeId, fromDate, toDate, MDC.get("requestId"));
 
-        List<Object[]> meetings =  meetingStatusRepo.findMeetingDetailsByEmployeeIdAndDateRange(employeeId,fromDate,toDate);
+        List<MeetingsDTO> meetings;
+
+        if (fromDate == null && toDate == null) {
+            meetings = meetingStatusRepo.findMeetingDetailsByEmployeeId(employeeId);
+        } else {
+            meetings = meetingStatusRepo.findMeetingDetailsByEmployeeIdAndDateRange(employeeId, fromDate, toDate);
+        }
+
         logger.info("Meetings fetched: {}, requestId: {}", meetings.size(), MDC.get("requestId"));
         MDC.clear();
         return meetings;

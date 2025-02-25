@@ -43,5 +43,4 @@ public class MeetingDTO {
     private boolean isActive;
 
 
-
 }

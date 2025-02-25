@@ -1,8 +1,10 @@
 package com.example.CalendarManagement.service;
 
 import com.example.CalendarManagement.DTO.EmployeeDTO;
+import com.example.CalendarManagement.DTO.MeetingsDTO;
 import com.example.CalendarManagement.Exception.DataStorageException;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
+import com.example.CalendarManagement.Exception.OfficeNotFoundException;
 import com.example.CalendarManagement.model.EmployeeModel;
 import com.example.CalendarManagement.model.OfficeModel;
 import com.example.CalendarManagement.repository.EmployeeRepo;
@@ -15,9 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -51,7 +51,6 @@ class EmployeeServiceTest {
         office.setId(officeId);
 
         when(officeRepo.findById(officeId)).thenReturn(Optional.of(office));
-        when(employeeRepo.findByWorkEmail(empDTO.getWorkEmail())).thenReturn(Optional.empty());
 
         assertDoesNotThrow(() -> employeeService.addEmployee(empDTO));
         verify(employeeRepo, times(1)).save(any(EmployeeModel.class));
@@ -59,10 +58,10 @@ class EmployeeServiceTest {
 
     @Test
     void addEmployee_givenNonExistentOffice_throwsException() {
-        EmployeeDTO empDTO = new EmployeeDTO(1, "John", "john@example.com", 99, true);
+        EmployeeDTO empDTO = new EmployeeDTO(1, "ajay", "ajay@example.com", 99, true);
         when(officeRepo.findById(99)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> employeeService.addEmployee(empDTO));
+        Exception exception = assertThrows(OfficeNotFoundException.class, () -> employeeService.addEmployee(empDTO));
         assertEquals("Office not found", exception.getMessage());
     }
 
@@ -114,7 +113,7 @@ class EmployeeServiceTest {
         int employeeId = 1;
         OfficeModel office = new OfficeModel();
         office.setId(1);
-        EmployeeModel employee = new EmployeeModel("John Doe", "john@example.com", office, true);
+        EmployeeModel employee = new EmployeeModel("Amarys", "amarys@example.com", office, true);
         employee.setId(employeeId);
 
         when(employeeRepo.findById(employeeId)).thenReturn(Optional.of(employee));
@@ -123,14 +122,31 @@ class EmployeeServiceTest {
 
         assertThat(result).isNotNull();
         assertEquals(employeeId, result.getEmployeeId());
-        assertEquals("John Doe", result.getName());
+        assertEquals("Amarys", result.getName());
     }
 
     @Test
     void getEmployeeById_givenNonExistentId_throwsException() {
         when(employeeRepo.findById(99)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> employeeService.getEmployeeById(99));
+        Exception exception = assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployeeById(99));
         assertEquals("Employee not found", exception.getMessage());
+    }
+
+    @Test
+    void getMeetingsOfEmployee_returnsMeetings() {
+        int employeeId = 1;
+        LocalDate fromDate = LocalDate.now();
+        LocalDate toDate = fromDate.plusDays(6);
+
+        MeetingsDTO meeting1 = new MeetingsDTO();
+        MeetingsDTO meeting2 = new MeetingsDTO();
+
+        when(meetingStatusRepo.findMeetingDetailsByEmployeeIdAndDateRange(employeeId, fromDate, toDate))
+                .thenReturn(Arrays.asList(meeting1, meeting2));
+
+        List<MeetingsDTO> meetings = employeeService.meetingsOfEmployee(employeeId, fromDate, toDate);
+
+        assertThat(meetings).hasSize(2);
     }
 }

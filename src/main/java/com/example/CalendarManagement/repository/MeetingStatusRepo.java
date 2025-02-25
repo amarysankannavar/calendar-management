@@ -1,5 +1,7 @@
 package com.example.CalendarManagement.repository;
 
+import com.example.CalendarManagement.DTO.MeetingDTO;
+import com.example.CalendarManagement.DTO.MeetingsDTO;
 import com.example.CalendarManagement.model.EmployeeModel;
 import com.example.CalendarManagement.model.MeetingModel;
 import com.example.CalendarManagement.model.MeetingStatusModel;
@@ -23,12 +25,31 @@ public interface MeetingStatusRepo extends JpaRepository<MeetingStatusModel, Int
     // Example: Find by meeting and status
     List<MeetingStatusModel> findByMeetingAndStatus(MeetingModel meeting, String status);
 
-    @Query("SELECT ms.meeting.id, ms.meeting.description, ms.meeting.agenda " +
-            "FROM MeetingStatusModel ms " +
-            "WHERE ms.employee.id = :employeeId AND ms.meeting.date BETWEEN :fromDate AND :toDate")
-    List<Object[]> findMeetingDetailsByEmployeeIdAndDateRange(Integer employeeId,
-                                                              @Param("fromDate") LocalDate fromDate,
-                                                              @Param("toDate") LocalDate toDate);
-
     void deleteByMeeting(MeetingModel meeting);
+
+    @Query("SELECT new com.example.CalendarManagement.DTO.MeetingsDTO( " +
+            "ms.meeting.id, ms.meeting.description, ms.meeting.agenda, " +
+            "ms.meeting.meetingRoom.roomId, ms.meeting.date, ms.meeting.startTime, " +
+            "ms.meeting.endTime, ms.meeting.isActive) " +
+            "FROM MeetingStatusModel ms " +
+            "WHERE ms.employee.id = :employeeId")
+    List<MeetingsDTO> findMeetingDetailsByEmployeeId(@Param("employeeId") Integer employeeId);
+
+
+    @Query("SELECT new com.example.CalendarManagement.DTO.MeetingsDTO( " +
+            "ms.meeting.id, ms.meeting.description, ms.meeting.agenda, " +
+            "ms.meeting.meetingRoom.roomId, ms.meeting.date, ms.meeting.startTime, " +
+            "ms.meeting.endTime, ms.meeting.isActive) " +
+            "FROM MeetingStatusModel ms " +
+            "WHERE ms.employee.id = :employeeId " +
+            "AND ms.meeting.date BETWEEN :fromDate AND :toDate")
+    List<MeetingsDTO> findMeetingDetailsByEmployeeIdAndDateRange(
+            @Param("employeeId") Integer employeeId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate);
+
+
+
+
+
 }

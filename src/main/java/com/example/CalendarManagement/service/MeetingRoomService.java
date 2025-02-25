@@ -90,7 +90,6 @@ public class MeetingRoomService {
             for (MeetingModel meeting : meetings) {
                 // Delete all meeting status records linked to this meeting
                 meetingService.cancelMeeting(meeting.getId());
-                meetingStatusRepo.deleteByMeeting(meeting);
 
                 // Set the meeting as inactive
 

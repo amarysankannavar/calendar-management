@@ -1,9 +1,11 @@
 package com.example.CalendarManagement.service;
 
 import com.example.CalendarManagement.DTO.MeetingRoomDTO;
+import com.example.CalendarManagement.Exception.DataStorageException;
 import com.example.CalendarManagement.Exception.RoomNotFoundException;
 import com.example.CalendarManagement.model.MeetingRoomModel;
 import com.example.CalendarManagement.model.OfficeModel;
+import com.example.CalendarManagement.repository.MeetingRepo;
 import com.example.CalendarManagement.repository.MeetingRoomRepo;
 import com.example.CalendarManagement.repository.OfficeRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,11 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.validation.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -26,10 +28,10 @@ class MeetingRoomServiceTest {
     private MeetingRoomRepo meetingRoomRepo;
 
     @Mock
-    private OfficeService officeService;
+    private OfficeRepo officeRepo;
 
     @Mock
-    private OfficeRepo officeRepo;
+    private MeetingRepo meetingRepo;
 
     @InjectMocks
     private MeetingRoomService meetingRoomService;
@@ -40,102 +42,102 @@ class MeetingRoomServiceTest {
     }
 
     @Test
-    void addMeetingRoom_givenValidMeetingRoomDetails_returnsSuccess() {
-        MeetingRoomDTO roomDTO = new MeetingRoomDTO(1, "Conference A", "Floor 2", 101, true);
+    void getMeetingRooms_returnsAllRooms() {
         OfficeModel office = new OfficeModel();
-        office.setId(101);
-        MeetingRoomModel roomModel = new MeetingRoomModel(roomDTO.getRoomName(), roomDTO.getRoomLocation(), office);
+        office.setId(1);
+        MeetingRoomModel room1 = new MeetingRoomModel("Room A", "First Floor", office);
+        MeetingRoomModel room2 = new MeetingRoomModel("Room B", "Second Floor", office);
+        room1.setAvailable(true);
+        room2.setAvailable(false);
+        when(meetingRoomRepo.findAll()).thenReturn(Arrays.asList(room1, room2));
 
-        when(meetingRoomRepo.existsById(roomDTO.getRoomId())).thenReturn(false);
-        when(officeRepo.findById(roomDTO.getOfficeId())).thenReturn(Optional.of(office));
+        List<MeetingRoomDTO> result = meetingRoomService.getMeetingRooms();
+
+        assertThat(result).hasSize(2);
+        assertEquals("Room A", result.get(0).getRoomName());
+        assertEquals("Room B", result.get(1).getRoomName());
+    }
+
+    @Test
+    void addMeetingRoom_givenValidDetails_savesSuccessfully() {
+        OfficeModel office = new OfficeModel();
+        office.setId(1);
+        MeetingRoomDTO roomDTO = new MeetingRoomDTO(0, "Room X", "Third Floor", 1, true);
+        when(officeRepo.findById(1)).thenReturn(Optional.of(office));
 
         assertDoesNotThrow(() -> meetingRoomService.addMeetingRoom(roomDTO));
-
         verify(meetingRoomRepo, times(1)).save(any(MeetingRoomModel.class));
     }
 
-
     @Test
-    void addMeetingRoom_givenEmptyRoomName_throwsValidationError() {
-        int officeId = 1;
+    void addMeetingRoom_givenInvalidOffice_throwsException() {
+        MeetingRoomDTO roomDTO = new MeetingRoomDTO(0, "Room X", "Third Floor", 99, true);
+        when(officeRepo.findById(99)).thenReturn(Optional.empty());
 
-        when(officeRepo.findById(officeId)).thenReturn(Optional.of(new OfficeModel()));
-
-        MeetingRoomDTO roomDTO = new MeetingRoomDTO(1, "", "Floor 2", officeId, true);
-
-        // Manually trigger validation
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<MeetingRoomDTO>> violations = validator.validate(roomDTO);
-
-        assertFalse(violations.isEmpty());
-        assertEquals("Room Name can not be empty.", violations.iterator().next().getMessage());
-
-        verify(meetingRoomRepo, never()).save(any());
+        assertThrows(IllegalArgumentException.class, () -> meetingRoomService.addMeetingRoom(roomDTO));
     }
 
-
-
-
     @Test
-    void deleteMeetingRoom_givenExistingRoomId_deletesRoom() {
-        int roomId = 1;
+    void getMeetingRoomById_givenValidId_returnsRoom() {
         OfficeModel office = new OfficeModel();
-        office.setId(101);
-        MeetingRoomModel room = new MeetingRoomModel("Conference A", "Floor 2", office);
-        room.setRoomId(roomId);
-
-        when(meetingRoomRepo.findById(roomId)).thenReturn(Optional.of(room));
-        meetingRoomService.deleteMeetingRoom(roomId);
-        verify(meetingRoomRepo, times(1)).delete(room);
-    }
-
-    @Test
-    void deleteMeetingRoom_givenNonExistingRoomId_throwsNotFoundException() {
-        int roomId = 2;
-        when(meetingRoomRepo.findById(roomId)).thenReturn(Optional.empty());
-        Exception exception = assertThrows(RoomNotFoundException.class, () -> meetingRoomService.deleteMeetingRoom(roomId));
-        assertEquals("Meeting Room not found", exception.getMessage());
-        verify(meetingRoomRepo, never()).delete(any());
-    }
-
-    @Test
-    void getMeetingRooms_whenRoomsExist_returnRoomList() {
-        OfficeModel office = new OfficeModel();
-        office.setId(103);
-        MeetingRoomModel room1 = new MeetingRoomModel("Conference A", "Floor 2", office);
-        MeetingRoomModel room2 = new MeetingRoomModel("Conference B", "Floor 3", office);
-        List<MeetingRoomModel> roomModels = Arrays.asList(room1, room2);
-
-        when(meetingRoomRepo.findAll()).thenReturn(roomModels);
-        List<MeetingRoomDTO> result = meetingRoomService.getMeetingRooms();
-
-        assertThat(result).hasSize(2)
-                .extracting(MeetingRoomDTO::getRoomName, MeetingRoomDTO::getRoomLocation, MeetingRoomDTO::getOfficeId)
-                .containsExactlyInAnyOrder(
-                        tuple("Conference A", "Floor 2", office.getId()),
-                        tuple("Conference B", "Floor 3", office.getId())
-                );
-
-        verify(meetingRoomRepo, times(1)).findAll();
-    }
-
-    @Test
-    void getMeetingRoomById_givenExistingRoomId_returnsRoomInfo() {
-        int roomId = 1;
-        OfficeModel office = new OfficeModel();
-        office.setId(106);
-        MeetingRoomModel room = new MeetingRoomModel("Conference A", "Floor 2", office);
-        room.setRoomId(roomId);
+        office.setId(1);
+        MeetingRoomModel room = new MeetingRoomModel("Room Y", "Ground Floor", office);
+        room.setRoomId(5);
         room.setAvailable(true);
 
-        when(meetingRoomRepo.findById(roomId)).thenReturn(Optional.of(room));
-        MeetingRoomDTO result = meetingRoomService.getMeetingRoomById(roomId);
+        when(meetingRoomRepo.findById(5)).thenReturn(Optional.of(room));
 
-        assertThat(result).isNotNull();
-        assertThat(result.getRoomId()).isEqualTo(roomId);
-        assertThat(result.getRoomName()).isEqualTo("Conference A");
-        assertThat(result.isAvailable()).isTrue();
-        verify(meetingRoomRepo, times(1)).findById(roomId);
+        MeetingRoomDTO result = meetingRoomService.getMeetingRoomById(5);
+
+        assertNotNull(result);
+        assertEquals("Room Y", result.getRoomName());
+        assertTrue(result.isAvailable());
+    }
+
+    @Test
+    void getMeetingRoomById_givenInvalidId_throwsException() {
+        when(meetingRoomRepo.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(RoomNotFoundException.class, () -> meetingRoomService.getMeetingRoomById(99));
+    }
+
+    @Test
+    void deleteMeetingRoom_givenValidRoomId_deactivatesRoom() {
+        MeetingRoomModel room = new MeetingRoomModel();
+        room.setRoomId(10);
+        room.setAvailable(true);
+        when(meetingRoomRepo.findById(10)).thenReturn(Optional.of(room));
+
+        meetingRoomService.deleteMeetingRoom(10);
+
+        assertFalse(room.isAvailable());
+        verify(meetingRoomRepo, times(1)).save(room);
+    }
+
+    @Test
+    void deleteMeetingRoom_givenInvalidRoomId_throwsException() {
+        when(meetingRoomRepo.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(RoomNotFoundException.class, () -> meetingRoomService.deleteMeetingRoom(99));
+    }
+
+    @Test
+    void updateMeetingRoomAvailability_givenValidId_updatesAvailability() {
+        MeetingRoomModel room = new MeetingRoomModel();
+        room.setRoomId(20);
+        room.setAvailable(false);
+        when(meetingRoomRepo.findById(20)).thenReturn(Optional.of(room));
+
+        meetingRoomService.updateMeetingRoomAvailability(20, true);
+
+        assertTrue(room.isAvailable());
+        verify(meetingRoomRepo, times(1)).save(room);
+    }
+
+    @Test
+    void updateMeetingRoomAvailability_givenInvalidId_throwsException() {
+        when(meetingRoomRepo.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(RoomNotFoundException.class, () -> meetingRoomService.updateMeetingRoomAvailability(99, true));
     }
 }

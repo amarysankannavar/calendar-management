@@ -56,7 +56,7 @@ public class MeetingController {
     public ResponseEntity<ApiResponse<String>> canScheduleMeeting(@Valid @RequestBody MeetingRequestDTO meetingRequestDTO){
         int schedule = meetingService.canSchedule(meetingRequestDTO);
         String canScheduleOrNot = schedule!=-1 ? "Can be scheduled. and the available Room id is:"+schedule : "can not schedule.";
-        return ResponseEntity.ok(new ApiResponse<>("The meeting availabilty fetched",200,canScheduleOrNot,null));
+        return ResponseEntity.ok(new ApiResponse<>("The meeting availability fetched",200,canScheduleOrNot,null));
     }
 
     @PostMapping("/scheduleMeeting")
@@ -69,11 +69,11 @@ public class MeetingController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>("meeting schedule details",409,"meet is not scheduled",errors));
             }
             return ResponseEntity.ok(new ApiResponse<>("meeting schedule details",200,"meet is scheduled. the meet id is :"+meetAndRoomId.getScheduledMeetingId()+
-                    "and the scheduled room id is: "+meetAndRoomId.getAvailableRoomId(),null));
+                    "and the scheduled room id is: "+meetAndRoomId.getAvailableRoomId()+" and the scheduled room name is: "+meetAndRoomId.getRoomName(),null));
 
     }
 
-    @PostMapping("/{meetingId}/cancel")
+    @PostMapping("/cancel/{meetingId}")
     public ResponseEntity<ApiResponse<String>> cancelMeeting(@PathVariable int meetingId) {
         boolean isCancelled = meetingService.cancelMeeting(meetingId);
 

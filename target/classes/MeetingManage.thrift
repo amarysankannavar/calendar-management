@@ -48,7 +48,8 @@ struct MeetingInformation {
 
 struct MeetingResponse {
     1: i32 scheduledMeetingId,
-    2: i32 availableRoomId
+    2: i32 availableRoomId,
+    3: string roomName
 }
 
 // Meeting Service Definition

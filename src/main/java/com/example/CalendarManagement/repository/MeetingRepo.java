@@ -20,10 +20,14 @@ public interface MeetingRepo extends JpaRepository<MeetingModel, Integer> {
 
     List<MeetingModel> findByIsActive(boolean isActive);
 
-    Void deleteById(int id);
-
-
+    void deleteById(int id);
 
 
 
 }
+
+
+
+
+
+

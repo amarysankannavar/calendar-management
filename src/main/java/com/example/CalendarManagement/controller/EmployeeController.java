@@ -1,8 +1,6 @@
 package com.example.CalendarManagement.controller;
 
-import com.example.CalendarManagement.DTO.ApiResponse;
-import com.example.CalendarManagement.DTO.EmployeeDTO;
-import com.example.CalendarManagement.DTO.EmployeeMeetingsDTO;
+import com.example.CalendarManagement.DTO.*;
 import com.example.CalendarManagement.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -53,30 +52,40 @@ public class EmployeeController {
 
     }
 
-    @PostMapping("/getMeetings/{employeeId}")
-    public ResponseEntity<ApiResponse<List<Object[]>>> getMeetingsOfEmployee(
+    @GetMapping("/getMeetings/{employeeId}")
+    public ResponseEntity<ApiResponse<List<MeetingsDTO>>> getMeetingsOfEmployee(
             @PathVariable int employeeId,
-            @RequestBody EmployeeMeetingsDTO request) {
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate,
+            @RequestParam(defaultValue = "false") boolean currentWeek) {
 
-        LocalDate fromDate;
-        LocalDate toDate;
-        if(request.isCurrentWeek()){
-            fromDate = LocalDate.now();
-            toDate = fromDate.plusDays(6);
+        LocalDate startDate;
+        LocalDate endDate;
 
+        if (currentWeek) {
+            startDate = LocalDate.now();
+            endDate = startDate.plusDays(6);
+        } else if (fromDate == null && toDate == null) {
+            List<MeetingsDTO> meetings = service.meetingsOfEmployee(employeeId, null, null);
+            return ResponseEntity.ok(new ApiResponse<>("Meetings of employee fetched successfully", 200, meetings, null));
+        } else {
+            try {
+                startDate = (fromDate != null) ? LocalDate.parse(fromDate) : null;
+                endDate = (toDate != null) ? LocalDate.parse(toDate) : null;
+
+                if (startDate == null || endDate == null || endDate.isBefore(startDate)) {
+                    HashMap<String, String> errorDetails = new HashMap<>();
+                    errorDetails.put("details", "Invalid date");
+                    return ResponseEntity.ok(new ApiResponse<>("The dates are not valid.", 400, null, errorDetails));
+                }
+            } catch (Exception e) {
+                HashMap<String, String> errorDetails = new HashMap<>();
+                errorDetails.put("details", "Invalid date format. Expected format: YYYY-MM-DD");
+                return ResponseEntity.ok(new ApiResponse<>("The dates are not valid.", 400, null, errorDetails));
+            }
         }
-      else  if (request.getFromDate() == null || request.getToDate() == null) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>("Missing required date parameters", 400, null, null));
-        }
-      else{
-            fromDate =request.getFromDate();
-            toDate=request.getToDate();
 
-        }
-
-        List<Object[]> meetings = service.meetingsOfEmployee(employeeId,fromDate , toDate);
-
+        List<MeetingsDTO> meetings = service.meetingsOfEmployee(employeeId, startDate, endDate);
         return ResponseEntity.ok(new ApiResponse<>("Meetings of employee fetched successfully", 200, meetings, null));
     }
 

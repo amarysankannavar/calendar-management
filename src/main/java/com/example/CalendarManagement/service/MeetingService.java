@@ -14,6 +14,7 @@ import com.example.CalendarManagement.model.MeetingRoomModel;
 import com.example.CalendarManagement.repository.EmployeeRepo;
 import com.example.CalendarManagement.repository.MeetingRepo;
 import com.example.CalendarManagement.repository.MeetingRoomRepo;
+import com.example.CalendarManagement.repository.MeetingStatusRepo;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -46,7 +47,11 @@ public class MeetingService {
     private EmployeeService employeeService;
 
     @Autowired
+    private MeetingStatusRepo meetingStatusRepo;
+
+    @Autowired
     private EmployeeRepo employeeRepo;
+
 
     MeetingRequest meetingRequest = new MeetingRequest();
 
@@ -157,7 +162,7 @@ public class MeetingService {
 
             try{
                 meetingAndRoomIds = client.scheduleMeeting(meetingInformation,meetingRequest,roomId);
-                logger.info("after calling the server side schedule meeting");
+                logger.info("after calling the schedule meeting");
             } catch (TException e) {
                 throw new RuntimeException(e);
             }
@@ -174,6 +179,7 @@ public class MeetingService {
         return meetingAndRoomIds;
     }
 
+    @Transactional
     public boolean cancelMeeting(int meetingId) {
         Optional<MeetingModel> meetingOptional = meetingRepo.findById(meetingId);
 
@@ -182,6 +188,7 @@ public class MeetingService {
         }
 
         MeetingModel meeting = meetingOptional.get();
+        meetingStatusRepo.deleteByMeeting(meeting);
         meeting.setActive(false); // Soft delete
         meetingRepo.save(meeting);
 

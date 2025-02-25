@@ -1,4 +1,5 @@
 package com.example.CalendarManagement.service;
+
 import com.example.CalendarManagement.DTO.MeetingRequestDTO;
 import com.example.CalendarManagement.DTO.ScheduleMeetingDTO;
 import com.example.CalendarManagement.Exception.EmployeeNotFoundException;
@@ -8,7 +9,7 @@ import com.example.CalendarManagement.model.MeetingModel;
 import com.example.CalendarManagement.model.MeetingRoomModel;
 import com.example.CalendarManagement.repository.EmployeeRepo;
 import com.example.CalendarManagement.repository.MeetingRepo;
-import com.example.CalendarManagement.repository.MeetingRoomRepo;
+import com.example.CalendarManagement.repository.MeetingStatusRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,7 @@ public class MeetingServiceTest {
     private MeetingRepo meetingRepo;
 
     @Mock
-    private MeetingRoomRepo meetingRoomRepo;
+    private MeetingStatusRepo meetingStatusRepo;
 
     @Mock
     private EmployeeRepo employeeRepo;
@@ -54,14 +55,13 @@ public class MeetingServiceTest {
     void getMeetingById_ExistingMeeting_ReturnsMeetingDTO() {
         MeetingModel meeting = new MeetingModel();
         MeetingRoomModel meetingRoom = new MeetingRoomModel();
-        meetingRoom.setRoomId(101); // Set some valid roomId
-        meeting.setMeetingRoom(meetingRoom); // Associate room with meeting
+        meetingRoom.setRoomId(101);
+        meeting.setMeetingRoom(meetingRoom);
 
         when(meetingRepo.findById(1)).thenReturn(Optional.of(meeting));
 
         assertNotNull(meetingService.getMeetingById(1));
     }
-
 
     @Test
     void getMeetingById_NonExistingMeeting_ThrowsException() {
@@ -71,15 +71,20 @@ public class MeetingServiceTest {
 
     @Test
     void cancelMeeting_ExistingMeeting_SoftDeletesMeeting() {
+        // Arrange
         MeetingModel meeting = new MeetingModel();
         meeting.setActive(true);
+
         when(meetingRepo.findById(1)).thenReturn(Optional.of(meeting));
 
+        // Act
         boolean result = meetingService.cancelMeeting(1);
 
+        // Assert
         assertTrue(result);
-        assertFalse(meeting.isActive());
-        verify(meetingRepo, times(1)).save(meeting);
+        assertFalse(meeting.isActive()); // Ensure soft delete
+        verify(meetingStatusRepo, times(1)).deleteByMeeting(meeting); // Ensure meeting status is deleted
+        verify(meetingRepo, times(1)).save(meeting); // Ensure meeting is saved after soft delete
     }
 
     @Test
