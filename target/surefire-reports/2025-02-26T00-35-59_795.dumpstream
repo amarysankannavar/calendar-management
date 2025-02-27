@@ -1,0 +1,6 @@
+# Created at 2025-02-26T00:44:56.315
+Java HotSpot(TM) 64-Bit Server VM warning: CodeCache is full. Compiler has been disabled.
+
+# Created at 2025-02-26T00:44:56.315
+Java HotSpot(TM) 64-Bit Server VM warning: Try increasing the code cache size using -XX:ReservedCodeCacheSize=
+
